@@ -2,7 +2,7 @@ FROM dynverse/dynwrapr:v0.1.0
 
 ARG GITHUB_PAT
 
-# RUN apt-get update && apt-get install -y libcgal-dev libglu1-mesa-dev libgsl-dev
+RUN apt-get update && apt-get install -y libudunits2-dev
 
 COPY definition.yml run.R example.sh package/ /code/
 
