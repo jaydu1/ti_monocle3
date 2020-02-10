@@ -17,6 +17,7 @@ install:
 - update_docker
 - install_hdf5
 - install_cran remotes
+- install_github rcannood/Matrix.utils # temporary fix since Matrix.utils was removed from CRAN
 - install_github_withdeps dynverse/dynwrap dynverse/dyntoy
 script:
 - source version
