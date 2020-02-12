@@ -9,6 +9,6 @@ COPY definition.yml run.R example.sh package/ /code/
 # temporary fix since Matrix.utils was removed from CRAN
 RUN R -e 'devtools::install_github("rcannood/Matrix.utils")'
 
-RUN R -e 'devtools::install("/code/", dependencies = TRUE, quick = TRUE)'
+RUN R -e 'devtools::install("/code/package", dependencies = TRUE, quick = TRUE)'
 
 ENTRYPOINT ["/code/run.R"]
