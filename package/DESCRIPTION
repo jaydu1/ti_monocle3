@@ -18,7 +18,8 @@ Imports:
   magrittr,
   Matrix,
   monocle3,
-  tibble
+  tibble,
+  tidyr
 Suggests: 
   testthat,
   dyntoy

@@ -8,10 +8,11 @@
 #'
 #' @import dplyr
 #' @import purrr
+#' @importFrom tidyr unnest
 #' @importFrom tibble rownames_to_column
 #' @importFrom magrittr set_colnames set_rownames
 #' @importFrom monocle3 new_cell_data_set preprocess_cds reduce_dimension cluster_cells learn_graph
-#' @import dynwrap
+#' @importFrom dynwrap wrap_data add_trajectory add_dimred simplify_trajectory add_timings
 #' @importFrom Matrix t
 #'
 #' @export
@@ -103,6 +104,8 @@ run_fun <- function(expression, parameters, priors, verbose, seed) {
       timings = checkpoints
     )
 }
+
+#' @importFrom dynwrap convert_definition
 definition <- dynwrap::convert_definition(yaml::read_yaml(system.file("definition.yml", package = "timonocle3")))
 
 
@@ -118,6 +121,8 @@ definition <- dynwrap::convert_definition(yaml::read_yaml(system.file("definitio
 #'   normalise = FALSE
 #' )
 #' model <- dynwrap::infer_trajectory(dataset, ti_monocle3())
+#'
+#' @importFrom dynwrap create_ti_method_r
 #'
 #' @export
 ti_monocle3 <- dynwrap::create_ti_method_r(
