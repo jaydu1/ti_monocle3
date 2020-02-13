@@ -25,5 +25,4 @@ Suggests:
   dyntoy
 Remotes:
   dynverse/dynwrap,
-  #cole-trapnell-lab/monocle3,
   rcannood/monocle3@patch-1
