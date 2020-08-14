@@ -45,7 +45,7 @@ run_fun <- function(expression, parameters, priors, verbose, seed) {
   cds <- monocle3::learn_graph(cds)
 
   # process monocle3 output
-  dimred <- cds@reducedDims$UMAP %>%
+  dimred <- reducedDims(cds)$UMAP %>%
     magrittr::set_colnames(c("comp_1", "comp_2"))
   dimred_milestones <- t(cds@principal_graph_aux$UMAP$dp_mst) %>%
     magrittr::set_colnames(colnames(dimred))
