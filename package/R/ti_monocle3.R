@@ -9,22 +9,63 @@
 #' @import dplyr
 #' @import purrr
 #' @importFrom tidyr unnest
-#' @importFrom tibble rownames_to_column
+#' @importFrom tibble rownames_to_column column_to_rownames
 #' @importFrom magrittr set_colnames set_rownames
 #' @importFrom monocle3 new_cell_data_set preprocess_cds reduce_dimension cluster_cells learn_graph
 #' @importFrom dynwrap wrap_data add_trajectory add_dimred simplify_trajectory add_timings
-#' @importFrom Matrix t
+#' @importFrom Matrix t rowSums
 #'
 #' @export
+#'
+#' @examples
+#' dataset <- source(system.file("example.sh", package = "timonocle3"))$value
+#'
+#' expression <- dataset$expression
+#' parameters <- dynparam::get_defaults(ti_monocle3()$parameters)
+#' priors <- dataset$prior_information
+#' verbose <- TRUE
+#' seed <- 1
+#'
+#' output <- run_fun(expression, parameters, priors, verbose, seed)
 run_fun <- function(expression, parameters, priors, verbose, seed) {
   checkpoints <- list(method_afterpreproc = as.numeric(Sys.time()))
 
-  # perform data preprocessing
-  cds <- monocle3::new_cell_data_set(expression_data = Matrix::t(expression))
+  # construct metadata
+  cell_info <- dataset$cell_info
+  if (!is.null(cell_info)) {
+    cell_info <- cell_info %>%
+      mutate(num_genes_expressed = Matrix::rowSums(expression > 0)) %>%
+      as.data.frame() %>%
+      tibble::column_to_rownames("cell_id")
+  }
+  feature_info <- dataset$feature_info
+  if (!is.null(feature_info)) {
+    if (!"gene_short_name" %in% colnames(feature_info)) {
+      if ("feature_name" %in% colnames(feature_info)) {
+        feature_info <- feature_info %>% mutate(gene_short_name = feature_name)
+      } else {
+        feature_info <- feature_info %>% mutate(gene_short_name = feature_id)
+      }
+    }
 
+    feature_info <- feature_info %>%
+      as.data.frame() %>%
+      tibble::column_to_rownames("feature_id")
+  }
+
+  # create cds object
+  cds <- monocle3::new_cell_data_set(
+    expression_data = Matrix::t(expression),
+    cell_metadata = cell_info,
+    gene_metadata = feature_info
+
+  )
+
+  # perform data preprocessing
   cds <- monocle3::preprocess_cds(
     cds,
-    num_dim = parameters$num_dim
+    num_dim = parameters$num_dim,
+    norm_method = "size_only"
   )
 
   # perform dimensionality reduction
@@ -45,7 +86,7 @@ run_fun <- function(expression, parameters, priors, verbose, seed) {
   cds <- monocle3::learn_graph(cds)
 
   # process monocle3 output
-  dimred <- reducedDims(cds)$UMAP %>%
+  dimred <- SingleCellExperiment::reducedDim(cds, parameters$reduction_method) %>%
     magrittr::set_colnames(c("comp_1", "comp_2"))
   dimred_milestones <- t(cds@principal_graph_aux$UMAP$dp_mst) %>%
     magrittr::set_colnames(colnames(dimred))

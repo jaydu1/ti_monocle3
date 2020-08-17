@@ -1,6 +1,6 @@
 Package: timonocle3
 Title: A dynverse wrapper of Monocle 3
-Version: 2.0.0
+Version: 2.0.1
 Authors@R: c(
   person("Robrecht", "Cannoodt", email = "rcannood@gmail.com", role = c("cre", "aut")),
   person("Wouter", "Saelens", email = "wouter.saelens@gmail.com", role = "aut"),
